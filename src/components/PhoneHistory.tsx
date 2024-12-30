@@ -1,8 +1,14 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
+interface PhoneEntry {
+  id: number;
+  phoneNumber: string;
+  timestamp: string;
+}
+
 interface PhoneHistoryProps {
-  history: { phoneNumber: string; timestamp: string }[];
+  history: PhoneEntry[];
 }
 
 const PhoneHistory: React.FC<PhoneHistoryProps> = ({ history }) => {
@@ -27,12 +33,14 @@ const PhoneHistory: React.FC<PhoneHistoryProps> = ({ history }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {history.map((entry, index) => (
-              <TableRow key={index} className="animate-fade-in">
+            {history.map((entry) => (
+              <TableRow key={entry.id} className="animate-fade-in">
                 <TableCell className="font-medium">
                   {formatPhoneNumber(entry.phoneNumber)}
                 </TableCell>
-                <TableCell>{entry.timestamp}</TableCell>
+                <TableCell>
+                  {new Date(entry.timestamp).toLocaleString()}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

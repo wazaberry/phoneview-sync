@@ -1,12 +1,32 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import PhoneHero from "@/components/PhoneHero";
+import PhoneHistory from "@/components/PhoneHistory";
+
+interface HistoryEntry {
+  phoneNumber: string;
+  timestamp: string;
+}
 
 const Index = () => {
+  const [searchParams] = useSearchParams();
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const phoneNumber = searchParams.get("PhoneID");
+
+  useEffect(() => {
+    if (phoneNumber) {
+      const newEntry = {
+        phoneNumber,
+        timestamp: new Date().toLocaleString(),
+      };
+      setHistory((prev) => [newEntry, ...prev]);
+    }
+  }, [phoneNumber]);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <PhoneHero phoneNumber={phoneNumber} />
+      <PhoneHistory history={history} />
     </div>
   );
 };

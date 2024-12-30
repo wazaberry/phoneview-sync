@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 interface PhoneEntry {
   id: number;
-  phoneNumber: string;
+  phonenumber: string; // Changed to match database column name
   timestamp: string;
 }
 
@@ -12,7 +12,9 @@ interface PhoneHistoryProps {
 }
 
 const PhoneHistory: React.FC<PhoneHistoryProps> = ({ history }) => {
-  const formatPhoneNumber = (phone: string) => {
+  const formatPhoneNumber = (phone: string | null | undefined) => {
+    if (!phone) return "Invalid Number";
+    
     const cleaned = phone.replace(/\D/g, "");
     const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
     if (match) {
@@ -36,7 +38,7 @@ const PhoneHistory: React.FC<PhoneHistoryProps> = ({ history }) => {
             {history.map((entry) => (
               <TableRow key={entry.id} className="animate-fade-in">
                 <TableCell className="font-medium">
-                  {formatPhoneNumber(entry.phoneNumber)}
+                  {formatPhoneNumber(entry.phonenumber)}
                 </TableCell>
                 <TableCell>
                   {new Date(entry.timestamp).toLocaleString()}

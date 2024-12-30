@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 
 interface PhoneEntry {
   id: number;
-  phoneNumber: string;
+  phonenumber: string; // Changed to match database column name
   timestamp: string;
 }
 

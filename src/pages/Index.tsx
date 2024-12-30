@@ -64,7 +64,7 @@ const Index = () => {
       if (phoneNumber) {
         const { error } = await supabase.from("phone_history").insert([
           {
-            phoneNumber,
+            phonenumber: phoneNumber,
             timestamp: new Date().toISOString(),
           },
         ]);

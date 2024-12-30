@@ -8,14 +8,14 @@ import { supabase } from "@/lib/supabase";
 
 interface PhoneEntry {
   id: number;
-  phonenumber: string; // Changed to match database column name
+  phonenumber: string;
   timestamp: string;
 }
 
 const Index = () => {
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
-  const phoneNumber = searchParams.get("PhoneID");
+  const [currentPhone, setCurrentPhone] = useState<string | null>(searchParams.get("PhoneID"));
 
   // Fetch phone history
   const { data: history = [] } = useQuery({
@@ -29,6 +29,11 @@ const Index = () => {
       if (error) {
         toast.error("Failed to fetch phone history");
         throw error;
+      }
+
+      // Update current phone with the latest entry
+      if (data && data.length > 0) {
+        setCurrentPhone(data[0].phonenumber);
       }
 
       return data as PhoneEntry[];
@@ -46,7 +51,12 @@ const Index = () => {
           schema: "public",
           table: "phone_history",
         },
-        () => {
+        (payload) => {
+          // Update the current phone number if it's an insert
+          if (payload.eventType === "INSERT") {
+            const newPhone = (payload.new as PhoneEntry).phonenumber;
+            setCurrentPhone(newPhone);
+          }
           // Invalidate and refetch when data changes
           queryClient.invalidateQueries({ queryKey: ["phone-history"] });
         }
@@ -61,26 +71,29 @@ const Index = () => {
   // Add new phone number to history
   useEffect(() => {
     const addPhoneNumber = async () => {
-      if (phoneNumber) {
+      const phoneFromUrl = searchParams.get("PhoneID");
+      if (phoneFromUrl && phoneFromUrl !== currentPhone) {
         const { error } = await supabase.from("phone_history").insert([
           {
-            phonenumber: phoneNumber,
+            phonenumber: phoneFromUrl,
             timestamp: new Date().toISOString(),
           },
         ]);
 
         if (error) {
           toast.error("Failed to add phone number to history");
+        } else {
+          setCurrentPhone(phoneFromUrl);
         }
       }
     };
 
     addPhoneNumber();
-  }, [phoneNumber]);
+  }, [searchParams, currentPhone]);
 
   return (
     <div className="min-h-screen bg-background">
-      <PhoneHero phoneNumber={phoneNumber} />
+      <PhoneHero phoneNumber={currentPhone} />
       <PhoneHistory history={history} />
     </div>
   );

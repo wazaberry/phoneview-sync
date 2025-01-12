@@ -1,4 +1,4 @@
-# Welcome to your PhoneSync project
+# Welcome to PhoneSync project
 
 ## Project info
 This is used as a test application to experiment with integrating CRM applications with IVR solutions.
